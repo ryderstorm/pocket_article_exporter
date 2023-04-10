@@ -4,7 +4,35 @@
     <title>Pocket Authorization Success</title>
   </head>
   <body>
-    <h1>Pocket Authorization Success</h1>
-    <p>Access Token: <%= access_token %></p>
+    <h1>Access Token Generated!</h1>
+    <span>Your access token is: <%= access_token %></span>
+    <button id="copy-token-btn">Copy to Clipboard</button>
+    <hr>
+    <div>
+      <form method="get" action="/">
+        <button type="submit">Back to Home</button>
+      </form>
+    </div>
+    <hr>
+    <div>
+      <form method="get" action="/article_list">
+        <button type="submit">View Articles</button>
+      </form>
+    </div>
+
+    <script>
+      const copyTokenBtn = document.querySelector('#copy-token-btn');
+      copyTokenBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText('<%= access_token %>')
+          .then(() => {
+            console.log('Access Token copied to clipboard');
+            alert('Access Token copied to clipboard');
+          })
+          .catch((err) => {
+            console.error('Failed to copy Access Token: ', err);
+            alert('Failed to copy Access Token');
+          });
+      });
+    </script>
   </body>
 </html>

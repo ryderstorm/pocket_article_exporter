@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My Pocket Articles</title>
+  </head>
+  <body>
+    <div>
+      <form method="get" action="/">
+        <button type="submit">Back to Home</button>
+      </form>
+      <hr>
+    </div>
+
+    <h1>My Pocket Articles</h1>
+    <ul>
+      <% article_list.each do |article| %>
+        <li><a href="<%= article['resolved_url'] %>"><%= article['resolved_title'] %></a></li>
+      <% end %>
+    </ul>
+
+  </body>
+</html>
