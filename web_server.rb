@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'logger'
 
 # Server class for handling the Pocket authorization flow
+# depends on the PocketAPI class from pocket_api.rb
 class PocketServer < Sinatra::Base
   CONSUMER_KEY = ENV['POCKET_CONSUMER_KEY']
   REDIRECT_URI = ENV['POCKET_REDIRECT_URI']
@@ -24,8 +25,6 @@ class PocketServer < Sinatra::Base
     logger.info "#{request.request_method} #{request.url}"
     logger.info "Params: #{params}"
     @pocket_api = PocketAPI.new
-    @pocket_api.request_token = session[:request_token] if session[:request_token]
-    @pocket_api.access_token = session[:access_token] if session[:access_token]
   end
 
   get '/' do
@@ -39,7 +38,7 @@ class PocketServer < Sinatra::Base
     session[:request_token] = @pocket_api.request_token
 
     # Redirect the user to the Pocket authorization page
-    redirect_url = @pocket_api.api_auth_url
+    redirect_url = @pocket_api.api_auth_url(@pocket_api.request_token)
     logger.info "Redirecting to: #{redirect_url}"
     redirect(redirect_url)
   end
@@ -51,11 +50,11 @@ class PocketServer < Sinatra::Base
     end
 
     # Exchange the request token for an access token
-    @pocket_api.create_access_token
+    @pocket_api.create_access_token(session[:request_token])
     session[:access_token] = @pocket_api.access_token
 
     # Display the access token to the user
-    erb :success, locals: { access_token: session[:access_token] }
+    erb :success, locals: { access_token: @pocket_api.access_token }
   end
 
   get '/article_list' do
@@ -64,7 +63,7 @@ class PocketServer < Sinatra::Base
       return "Cannot retrieve articles without an access token. Please <a href='/'>authorize</a> first."
     end
 
-    article_list = @pocket_api.update_article_list
+    article_list = @pocket_api.update_article_list(session[:access_token])
 
     # Render the article list as HTML
     erb :articles, locals: { article_list: article_list }
