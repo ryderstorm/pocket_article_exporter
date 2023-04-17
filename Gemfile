@@ -1,7 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'dotenv'
 gem 'httparty'
 gem 'sinatra'
-gem 'sinatra-contrib'
 gem 'yaml'
+
+group :test do
+  gem 'rspec'
+  gem 'simplecov'
+  gem 'webmock'
+end
