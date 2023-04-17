@@ -1,0 +1,111 @@
+/* Dracula Theme */
+:root {
+  --background: #282a36;
+  --background2: #44475a;
+  --foreground: #f8f8f2;
+  --comment: #6272a4;
+  --cyan: #8be9fd;
+  --green: #50fa7b;
+  --orange: #ffb86c;
+  --pink: #ff79c6;
+  --purple: #bd93f9;
+  --red: #ff5555;
+  --yellow: #f1fa8c;
+}
+
+/* General Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 1em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+.container {
+  background-color: var(--background2);
+  border-radius: 4px;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.button {
+  background-color: var(--purple);
+  border: none;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin: 1em;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--cyan);
+}
+
+.article {
+  background-color: var(--current-line);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+hr {
+  /* border: 1px solid var(--background2); */
+  margin: 20px 0;
+}
+
+.article-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--green);
+}
+
+.article-excerpt {
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--comment);
+  margin-top: 10px;
+}
+
+.article-meta span {
+  margin-right: 10px;
+}
+
+.download-button {
+  background-color: var(--purple);
+}

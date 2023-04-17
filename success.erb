@@ -1,25 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pocket Authorization Success</title>
+    <link rel="stylesheet" href="/style.css">
+    <title>Pocket Article Exporter</title>
   </head>
   <body>
-    <h1>Access Token Generated!</h1>
-    <span>Your access token is: <%= access_token %></span>
-    <button id="copy-token-btn">Copy to Clipboard</button>
-    <hr>
-    <div>
-      <form method="get" action="/">
-        <button type="submit">Back to Home</button>
-      </form>
+    <div class="container">
+      <h1>Access Token Generated!</h1>
+      <span>Your access token is: <%= access_token %></span>
+      <button class="button" id="copy-token-btn">Copy token to clipboard</button>
+      <a class="button" href="/" aria-label="Back to home page"><span>Home Page</span></a>
+      <a class="button" href="/article_list" aria-label="View the list of articles"><span>View Articles</span></a>
     </div>
-    <hr>
-    <div>
-      <form method="get" action="/article_list">
-        <button type="submit">View Articles</button>
-      </form>
-    </div>
-
     <script>
       const copyTokenBtn = document.querySelector('#copy-token-btn');
       copyTokenBtn.addEventListener('click', () => {

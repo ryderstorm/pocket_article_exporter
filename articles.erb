@@ -2,22 +2,24 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>My Pocket Articles</title>
+    <link rel="stylesheet" href="/style.css">
+    <title>Pocket Article Exporter</title>
   </head>
   <body>
-    <div>
-      <form method="get" action="/">
-        <button type="submit">Back to Home</button>
-      </form>
+    <div class="container">
+      <a class="button" href="/" aria-label="Back to home page"><span>Home Page</span></a>
+      <br>
       <hr>
+      <a class="button" href="/download_article_list?format=yaml" aria-label="Download articles as YAML"><span>Download articles as YAML</span></a>
+      <a class="button" href="/download_article_list?format=json" aria-label="Download articles as JSON"><span>Download articles as JSON</span></a>
+      <a class="button" href="/download_article_list?format=csv" aria-label="Download articles as CSV"><span>Download articles as CSV</span></a>
+      <hr>
+      <h1>My Pocket Articles</h1>
+      <ul>
+        <% article_list.each do |article| %>
+          <li><a href="<%= article['resolved_url'] %>"><%= article['resolved_title'] %></a></li>
+        <% end %>
+      </ul>
     </div>
-
-    <h1>My Pocket Articles</h1>
-    <ul>
-      <% article_list.each do |article| %>
-        <li><a href="<%= article['resolved_url'] %>"><%= article['resolved_title'] %></a></li>
-      <% end %>
-    </ul>
-
   </body>
 </html>

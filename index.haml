@@ -1,0 +1,22 @@
+!!! 5
+%html
+  %head
+    %link{rel: "stylesheet", href: "/style.css"}
+    %title Pocket Article Exporter
+  %body
+    .container
+      %h1 Pocket Authorization
+      - if access_token
+        %span Your access token is: #{access_token}
+        %button.button#copy-token-btn Copy token to clipboard
+        %br
+        %a.button(href="/article_list" aria-label="View the list of articles")
+          %span View Articles
+      - else
+        %form(method="post" action="/authorize")
+          %button.button(type="submit") Authorize with Pocket
+      %br
+      %hr
+      %br
+      %form(method="post" action="/clear_session")
+        %button.button(type="submit") Clear Session

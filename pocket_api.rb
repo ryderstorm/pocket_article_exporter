@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'httparty'
 require 'logger'
 
 # Class for interacting with the Pocket API
 class PocketAPI
-  BASE_API_URI = 'https://getpocket.com/v3'.freeze
+  BASE_API_URI = 'https://getpocket.com/v3'
 
   attr_reader :request_token, :access_token, :consumer_key, :callback_uri, :article_list
 
@@ -12,6 +14,13 @@ class PocketAPI
     @consumer_key = ENV['POCKET_CONSUMER_KEY']
     @callback_uri = ENV['POCKET_REDIRECT_URI']
     verify_envs
+  end
+
+  def reset
+    @logger.info('Resetting PocketAPI instance')
+    @request_token = nil
+    @access_token = nil
+    @article_list = nil
   end
 
   def run_auth_flow
@@ -50,18 +59,24 @@ class PocketAPI
     @logger.info(
       "Access token response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
     )
-    @access_token = response.parsed_response['access_token']
+    if response.code == 200
+      @access_token = response.parsed_response['access_token']
+      true
+    else
+      @logger.error("Error creating access token: #{response.message}")
+      false
+    end
   end
 
   def update_article_list(access_token)
     @logger.info('Retrieving article list from Pocket API')
     options = {
       headers: default_headers,
-      body: { consumer_key: @consumer_key, access_token: access_token, detailType: 'complete' }.to_json
+      body: { consumer_key: @consumer_key, access_token: access_token, detailType: 'complete', state: 'all' }.to_json
     }
     response = HTTParty.post("#{BASE_API_URI}/get", options)
     @logger.info(
-      "Article list response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tBody omitted for brevity."
+      "Article list response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
     )
     @article_list = response.parsed_response['list'].map { |_id, article| article }
   end
@@ -80,5 +95,35 @@ class PocketAPI
       "Content-Type": 'application/json; charset=UTF8',
       "X-Accept": 'application/json'
     }
+  end
+
+  def articles_as_yaml
+    raise 'Article list is empty' if @article_list.nil?
+
+    @article_list.to_yaml
+  end
+
+  def articles_as_json
+    raise 'Article list is empty' if @article_list.nil?
+
+    @article_list.to_json
+  end
+
+  def articles_as_csv
+    raise 'Article list is empty' if @article_list.nil?
+
+    CSV.generate do |csv|
+      csv << %w[url title description tags created]
+      @article_list.each do |article|
+        csv << article_csv_row(article)
+      end
+    end
+  end
+
+  def article_csv_row(article)
+    tags = article['tags']&.keys&.join(',')
+
+    [article['resolved_url'], article['resolved_title'], article['excerpt'], tags.nil? ? '' : tags,
+     article['time_added']]
   end
 end
