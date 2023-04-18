@@ -10,14 +10,15 @@ class PocketAPI
   attr_reader :request_token, :access_token, :consumer_key, :callback_uri, :article_list
 
   def initialize
-    @logger = Logger.new($stdout)
+    log_level = ENV['LOG_LEVEL'] || 'info'
+    @logger = Logger.new($stdout, level: log_level)
     @consumer_key = ENV['POCKET_CONSUMER_KEY']
     @callback_uri = ENV['POCKET_REDIRECT_URI']
     verify_envs
   end
 
   def reset
-    @logger.info('Resetting PocketAPI instance')
+    @logger.debug('Resetting PocketAPI instance')
     @request_token = nil
     @access_token = nil
     @article_list = nil
@@ -37,26 +38,26 @@ class PocketAPI
   end
 
   def create_request_token
-    @logger.info('Creating request token')
+    @logger.debug('Creating request token')
     options = {
       headers: default_headers,
       body: { consumer_key: @consumer_key, redirect_uri: @callback_uri }.to_json
     }
     response = HTTParty.post("#{BASE_API_URI}/oauth/request", options)
-    @logger.info(
+    @logger.debug(
       "Request token response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
     )
     @request_token = response.parsed_response['code']
   end
 
   def create_access_token(request_token)
-    @logger.info('Creating access token')
+    @logger.debug('Creating access token')
     options = {
       headers: default_headers,
       body: { consumer_key: @consumer_key, code: request_token }.to_json
     }
     response = HTTParty.post("#{BASE_API_URI}/oauth/authorize", options)
-    @logger.info(
+    @logger.debug(
       "Access token response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
     )
     if response.code == 200
@@ -69,13 +70,13 @@ class PocketAPI
   end
 
   def update_article_list(access_token)
-    @logger.info('Retrieving article list from Pocket API')
+    @logger.debug('Retrieving article list from Pocket API')
     options = {
       headers: default_headers,
       body: { consumer_key: @consumer_key, access_token: access_token, detailType: 'complete', state: 'all' }.to_json
     }
     response = HTTParty.post("#{BASE_API_URI}/get", options)
-    @logger.info(
+    @logger.debug(
       "Article list response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
     )
     @article_list = response.parsed_response['list'].map { |_id, article| article }

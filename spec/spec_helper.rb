@@ -6,6 +6,11 @@ WebMock.disable_net_connect!(allow_localhost: true)
 require 'simplecov'
 SimpleCov.start
 
+# Set up environment variables for testing
+ENV['POCKET_CONSUMER_KEY'] = 'test-consumer-key'
+ENV['POCKET_REDIRECT_URI'] = 'http://localhost:3000/auth/pocket/callback'
+ENV['LOG_LEVEL'] = 'fatal'
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -26,10 +31,4 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
-
-  config.before(:each) do
-    # Set up environment variables for testing
-    ENV['POCKET_CONSUMER_KEY'] = 'test-consumer-key'
-    ENV['POCKET_REDIRECT_URI'] = 'http://localhost:3000/auth/pocket/callback'
-  end
 end

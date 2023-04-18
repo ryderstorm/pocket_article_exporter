@@ -12,7 +12,8 @@ class PocketServer < Sinatra::Base
   configure do
     # Configure the logger to log to STDOUT
     enable :logging
-    set :logger, Logger.new($stdout)
+    log_level = ENV['LOG_LEVEL'] || 'info'
+    set :logger, Logger.new($stdout, log_level)
     # Set the port and bind address for the web server
     set :port, 8999
     set :bind, '0.0.0.0'
@@ -27,9 +28,9 @@ class PocketServer < Sinatra::Base
   end
 
   before do
-    logger.info "#{request.request_method} #{request.url}"
-    logger.info "Params: #{params}"
-    logger.info "Session keys: #{session.keys}"
+    logger.debug "#{request.request_method} #{request.url}"
+    logger.debug "Params: #{params}"
+    logger.debug "Session keys: #{session.keys}"
   end
 
   get '/' do
@@ -37,7 +38,7 @@ class PocketServer < Sinatra::Base
   end
 
   post '/clear_session' do
-    logger.info 'Clearing session'
+    logger.debug 'Clearing session'
     session.clear
     settings.pocket_api.reset
     redirect '/'
@@ -55,7 +56,7 @@ class PocketServer < Sinatra::Base
 
     # Redirect the user to the Pocket authorization page
     redirect_url = settings.pocket_api.api_auth_url(settings.pocket_api.request_token)
-    logger.info "Redirecting to: #{redirect_url}"
+    logger.debug "Redirecting to: #{redirect_url}"
     redirect redirect_url
   end
 
@@ -93,7 +94,7 @@ class PocketServer < Sinatra::Base
   get '/article_list' do
     # Serve the article list from the session if it exists
     unless settings.pocket_api.article_list.nil?
-      logger.info 'Serving article list from session'
+      logger.debug 'Serving article list from session'
       return erb :articles, locals: { article_list: settings.pocket_api.article_list }
     end
 
