@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.join(File.dirname(__FILE__), '..', '..', 'pocket_api.rb')
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'pocket_api.rb')
 require 'pry'
 require 'spec_helper'
 require 'webmock/rspec'

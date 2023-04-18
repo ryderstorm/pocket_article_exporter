@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/style.css">
+    <title>Pocket Article Exporter</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">
+        <h1>Pocket Article Exporter</h1>
+      </div>
+      <div class="menu">
+        <%= erb :'_menu' %>
+      </div>
+      <% if access_token %>
+        <span>Your access token is: <%= access_token %></span>
+        <button class="button" id="copy-token-btn">Copy token to clipboard</button>
+        <br>
+        <a class="button" href="/article_list" aria-label="View the list of articles">
+          <span>View Articles</span>
+        </a>
+      <% else %>
+        <form method="post" action="/authorize">
+          <button class="button" type="submit">Authorize with Pocket</button>
+        </form>
+      <% end %>
+      <br>
+      <hr>
+      <br>
+      <form method="post" action="/clear_session">
+        <button class="button" type="submit">Clear Session</button>
+      </form>
+    </div>
+  </body>
+</html>

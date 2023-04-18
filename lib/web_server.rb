@@ -18,8 +18,8 @@ class PocketServer < Sinatra::Base
     set :port, 8999
     set :bind, '0.0.0.0'
     # Set the views directory to 'views/' relative to the current directory
-    set :public_folder, File.dirname(__FILE__)
-    set :views, File.dirname(__FILE__)
+    set :public_folder, File.join(File.dirname(__FILE__), '..', 'public')
+    set :views, File.join(File.dirname(__FILE__), '..', 'views')
 
     # Instantiate the PocketAPI class
     set :pocket_api, PocketAPI.new
@@ -34,7 +34,7 @@ class PocketServer < Sinatra::Base
   end
 
   get '/' do
-    haml :index, locals: { access_token: session[:access_token] }
+    erb :index, locals: { access_token: session[:access_token] }
   end
 
   post '/clear_session' do

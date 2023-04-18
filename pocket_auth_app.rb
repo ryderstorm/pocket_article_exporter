@@ -11,8 +11,8 @@
 # information about HTTParty at
 #
 
-require './pocket_api'
-require './web_server'
+require './lib/pocket_api'
+require './lib/web_server'
 
 # Set process ID file so that the app can be easily killed and reloaded
 File.write('pocket_auth_app_pid.txt', Process.pid)
