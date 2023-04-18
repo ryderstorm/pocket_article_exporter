@@ -34,16 +34,6 @@ RSpec.describe PocketAPI do
       expect(api.consumer_key).to eq(consumer_key)
       expect(api.callback_uri).to eq(redirect_uri)
     end
-
-    it 'raises an error if POCKET_CONSUMER_KEY is not set' do
-      ENV.delete('POCKET_CONSUMER_KEY')
-      expect { PocketAPI.new }.to raise_error('POCKET_CONSUMER_KEY is not set')
-    end
-
-    it 'raises an error if POCKET_REDIRECT_URI is not set' do
-      ENV.delete('POCKET_REDIRECT_URI')
-      expect { PocketAPI.new }.to raise_error('POCKET_REDIRECT_URI is not set')
-    end
   end
 
   describe '#reset' do

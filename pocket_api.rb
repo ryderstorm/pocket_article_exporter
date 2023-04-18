@@ -14,7 +14,6 @@ class PocketAPI
     @logger = Logger.new($stdout, level: log_level)
     @consumer_key = ENV['POCKET_CONSUMER_KEY']
     @callback_uri = ENV['POCKET_REDIRECT_URI']
-    verify_envs
   end
 
   def reset
@@ -84,11 +83,6 @@ class PocketAPI
 
   def api_auth_url(request_token)
     "https://getpocket.com/auth/authorize?request_token=#{request_token}&redirect_uri=#{@callback_uri}"
-  end
-
-  def verify_envs
-    raise 'POCKET_CONSUMER_KEY is not set' if ENV['POCKET_CONSUMER_KEY'].nil?
-    raise 'POCKET_REDIRECT_URI is not set' if ENV['POCKET_REDIRECT_URI'].nil?
   end
 
   def default_headers
