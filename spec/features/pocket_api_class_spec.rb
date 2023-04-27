@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'pocket_api.rb')
-require 'pry'
 require 'spec_helper'
 require 'webmock/rspec'
 
@@ -103,7 +102,6 @@ RSpec.describe PocketAPI do
   describe '#update_article_list' do
     before(:each) do
       api.instance_variable_set(:@access_token, 'test-access-token')
-      # binding.pry
       stub_request(:post, "#{base_api_uri}/get")
         .with(
           headers: { 'Content-Type' => 'application/json; charset=UTF8', 'X-Accept' => 'application/json' },
