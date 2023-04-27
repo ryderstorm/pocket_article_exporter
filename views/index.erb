@@ -2,34 +2,121 @@
 <html>
   <head>
     <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.1/spinkit.min.css" integrity="sha512-kRYkjiYH/VXxoiaDK2oGNMKIi8VQVfie1lkYGX3kmfzWNR2kfaF5ze0885W3/eE6lIiURBsZA91M/WNvCajHMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Pocket Article Exporter</title>
   </head>
   <body>
-    <div class="container">
-      <div class="title">
+    <div id="container">
+      <div id="title">
         <h1>Pocket Article Exporter</h1>
       </div>
-      <div class="menu">
-        <%= erb :'_menu' %>
+      <div id="content">
+        <div id="links-wrapper">
+          <a class="button" href="https://stormhold.net" target="_blank">Read the blog post about this tool</a>
+          <a class="button" ref="https://github.com/ryderstorm/pocket_article_exporter" target="_blank"><svg style="margin-right: 5px;" height="18" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="18" data-view-component="true" class="octicon octicon-mark-github v-align-middle"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
+            View on GitHub
+          </a>
+        </div>
+        <hr>
+        <% if access_token %>
+          <div id="token-wrapper">
+            <span>Your access token is: </span><span id="access-token"><%= access_token %></span>
+            <span id="copy-token-btn" class="material-icons md-light md-18" alt="Copy to clipboard">
+              content_copy
+            </span>
+          </div>
+        <% end %>
+        <div class="menu">
+          <ul class="menu-list">
+              <% if access_token %>
+                <li>
+                  <form method="post" action="/clear_session">
+                    <button class="button" type="submit">Clear Session</button>
+                  </form>
+                </li>
+                <% unless article_list %>
+                  <li>
+                    <a class="button" id="fetch-articles-btn" href="/article_list" aria-label="Fetch articles from the Pocket API">
+                      <span>Fetch Articles</span>
+                    </a>
+                  </li>
+                <% end %>
+              <% else %>
+                <form method="post" action="/authorize">
+                  <button class="button" type="submit">Authorize with Pocket</button>
+                </form>
+              <% end %>
+          </ul>
+        </div>
+        <div id="modal">
+          <p></p>
+          <div class="sk-flow">
+            <div class="sk-flow-dot"></div>
+            <div class="sk-flow-dot"></div>
+            <div class="sk-flow-dot"></div>
+          </div>
+        </div>
+        <% if article_list %>
+          <hr>
+          <div class="menu">
+            <ul class="menu-list">
+              <li><a class="button download-button" href="/download_article_list?format=yaml"><span>Download as YAML</span></a></li>
+              <li><a class="button download-button" href="/download_article_list?format=json"><span>Download as JSON</span></a></li>
+              <li><a class="button download-button" href="/download_article_list?format=csv"><span>Download as Raindrop.io CSV</span></a></li>
+            </ul>
+          </div>
+          <ol id="article-list">
+            <% article_list.each do |article| %>
+              <li>
+                <div class="article-wrapper">
+                  <a href="<%= article['resolved_url'] %>"><%= article['given_title'] %></a>
+                  <div class="article-meta">
+                    <span class="article-date">Added on <%= Time.at(article['time_added'].to_i).strftime('%Y-%m-%d') %></span>
+                    <% if article['tags'] %>
+                      <div class="tags">
+                        <% article['tags'].keys.each do |tag| %>
+                          <span class="tag"><%= tag %></span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+        <% end %>
       </div>
-      <% if access_token %>
-        <span>Your access token is: <%= access_token %></span>
-        <button class="button" id="copy-token-btn">Copy token to clipboard</button>
-        <br>
-        <a class="button" href="/article_list" aria-label="View the list of articles">
-          <span>View Articles</span>
-        </a>
-      <% else %>
-        <form method="post" action="/authorize">
-          <button class="button" type="submit">Authorize with Pocket</button>
-        </form>
-      <% end %>
-      <br>
-      <hr>
-      <br>
-      <form method="post" action="/clear_session">
-        <button class="button" type="submit">Clear Session</button>
-      </form>
     </div>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script>
+      const copyTokenBtn = document.querySelector('#copy-token-btn');
+      if (copyTokenBtn) {
+        tippy(copyTokenBtn, { content: 'Copy access token to clipboard' });
+        copyTokenBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText('<%= access_token %>')
+            .then(() => {
+              const copiedTooltip = tippy(copyTokenBtn, { content: 'Copied!' });
+              copiedTooltip.show();
+              setTimeout(() => {
+                copiedTooltip.hide();
+                setTimeout(() => {
+                  copiedTooltip.destroy();
+                }, 500);
+              }, 1500);
+            })
+        });
+      }
+      const fetchArticlesBtn = document.querySelector('#fetch-articles-btn');
+      if (fetchArticlesBtn) {
+        fetchArticlesBtn.addEventListener('click', () => {
+          const modal = document.querySelector('#modal');
+          modal.querySelector('p').textContent = 'Fetching the articles from the Pocket API could take a few minutes. Please wait...';
+          modal.style.display = 'flex';
+        });
+      }
+    </script>
   </body>
 </html>

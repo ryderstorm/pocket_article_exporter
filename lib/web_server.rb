@@ -34,7 +34,10 @@ class PocketServer < Sinatra::Base
   end
 
   get '/' do
-    erb :index, locals: { access_token: session[:access_token] }
+    erb :index, locals: {
+      access_token: session[:access_token],
+      article_list: settings.pocket_api.article_list
+    }
   end
 
   post '/clear_session' do
@@ -86,9 +89,7 @@ class PocketServer < Sinatra::Base
       logger.error error_message
       return erb :error, locals: { error_message: error_message }
     end
-
-    # Display the access token to the user
-    erb :success, locals: { access_token: session[:access_token] }
+    redirect '/'
   end
 
   get '/article_list' do
@@ -111,8 +112,7 @@ class PocketServer < Sinatra::Base
       return erb :error, locals: { error_message: error_message }
     end
 
-    # Render the article list as HTML
-    erb :articles, locals: { article_list: settings.pocket_api.article_list }
+    redirect '/'
   end
 
   get '/download_article_list' do
@@ -143,5 +143,6 @@ class PocketServer < Sinatra::Base
       return erb :error, locals: { error_message: error_message }
     end
     send_file(filename, filename: filename, type: 'Application/octet-stream')
+    redirect '/'
   end
 end
