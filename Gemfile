@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'httparty'
+gem 'puma'
 gem 'sinatra'
 gem 'yaml'
 

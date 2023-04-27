@@ -17,7 +17,10 @@ GEM
     multi_xml (0.6.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.8)
     public_suffix (5.0.1)
+    puma (5.6.5)
+      nio4r (~> 2.0)
     rack (2.2.4)
     rack-protection (3.0.4)
       rack
@@ -59,6 +62,7 @@ PLATFORMS
 
 DEPENDENCIES
   httparty
+  puma
   rspec
   simplecov
   sinatra
