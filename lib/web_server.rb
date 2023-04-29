@@ -50,9 +50,7 @@ class PocketServer < Sinatra::Base
   post '/authorize' do
     # Create a request token
     unless settings.pocket_api.create_request_token
-      error_message = 'Failed to create request token. See logs for details.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error, locals: { error_message: 'Failed to create request token. See logs for details.' }
     end
 
     session[:request_token] = settings.pocket_api.request_token
@@ -65,16 +63,13 @@ class PocketServer < Sinatra::Base
 
   get '/callback' do
     if session[:request_token].nil?
-      error_message = 'Cannot create access token without a request token. Please authorize first.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error,
+                 locals: { error_message: 'Cannot create access token without request token. Please authorize first.' }
     end
 
     # Exchange the request token for an access token
     unless settings.pocket_api.create_access_token(session[:request_token])
-      error_message = 'Failed to create access token. See logs for details.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error, locals: { error_message: 'Failed to create access token. See logs for details.' }
     end
 
     session[:access_token] = settings.pocket_api.access_token
@@ -85,10 +80,9 @@ class PocketServer < Sinatra::Base
 
   get '/auth_success' do
     if session[:access_token].nil?
-      error_message = 'No access token found in session. User must authorize first.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error, locals: { error_message: 'No access token found in session. User must authorize first.' }
     end
+
     redirect '/'
   end
 
@@ -107,15 +101,11 @@ class PocketServer < Sinatra::Base
 
     # Retrieve the article list from the Pocket API
     if session[:access_token].nil?
-      error_message = 'No access token found in session. User must authorize first.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error, locals: { error_message: 'No access token found in session. User must authorize first.' }
     end
 
     unless settings.pocket_api.update_article_list(session[:access_token])
-      error_message = 'Failed to retrieve article list. See logs for details.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error, locals: { error_message: 'Failed to retrieve article list. See logs for details.' }
     end
 
     redirect '/'
@@ -123,32 +113,36 @@ class PocketServer < Sinatra::Base
 
   get '/download_article_list' do
     if settings.pocket_api.article_list.nil?
-      error_message = 'No article list found in session. Please retrieve your article list first.'
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+      return erb :error,
+                 locals: { error_message: 'No article list found in session. Please retrieve your article list first.' }
     end
 
     # Serve the article list
     FileUtils.mkdir_p('downloads')
-    case params[:format]
-    when 'json'
-      filename = "downloads/pocket_article_list_#{Time.now.strftime('%Y%m%d_%H%M%S')}.json"
-      content = settings.pocket_api.articles_as_json
-      File.write(filename, content)
-    when 'yaml'
-      filename = "downloads/pocket_article_list_#{Time.now.strftime('%Y%m%d_%H%M%S')}.yaml"
-      content = settings.pocket_api.articles_as_yaml
-      File.write(filename, content)
-    when 'csv'
-      filename = "downloads/pocket_article_list_#{Time.now.strftime('%Y%m%d_%H%M%S')}.csv"
-      content = settings.pocket_api.articles_as_csv
-      File.write(filename, content)
-    else
-      error_message = "Invalid value for 'format' parameter: #{params[:format]}"
-      logger.error error_message
-      return erb :error, locals: { error_message: error_message }
+    file_format = params[:format]
+    unless %w[json yaml csv].include?(file_format)
+      return erb :error, locals: { error_message: "Invalid value for 'format' parameter: #{params[:format]}" }
     end
+
+    content = article_list_content(file_format)
+    filename = "#{filename_prefix}.#{file_format}"
+    File.write("#{filename_prefix}.#{file_format}", content)
     send_file(filename, filename: filename, type: 'Application/octet-stream')
     redirect '/'
+  end
+
+  def filename_prefix
+    "pocket_article_list_#{Time.now.strftime('%Y%m%d_%H%M%S')}"
+  end
+
+  def article_list_content(file_format)
+    case file_format
+    when 'json'
+      settings.pocket_api.articles_as_json
+    when 'yaml'
+      settings.pocket_api.articles_as_yaml
+    when 'csv'
+      settings.pocket_api.articles_as_csv
+    end
   end
 end

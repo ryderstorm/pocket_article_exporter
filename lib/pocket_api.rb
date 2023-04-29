@@ -38,34 +38,23 @@ class PocketAPI
 
   def create_request_token
     @logger.debug('Creating request token')
-    options = {
-      headers: default_headers,
-      body: { consumer_key: @consumer_key, redirect_uri: @callback_uri }.to_json
-    }
+    options = { headers: default_headers, body: { consumer_key: @consumer_key, redirect_uri: @callback_uri }.to_json }
     response = HTTParty.post("#{BASE_API_URI}/oauth/request", options)
-    @logger.debug(
-      "Request token response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
-    )
+    @logger.debug("Response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}")
     @request_token = response.parsed_response['code']
   end
 
   def create_access_token(request_token)
     @logger.debug('Creating access token')
-    options = {
-      headers: default_headers,
-      body: { consumer_key: @consumer_key, code: request_token }.to_json
-    }
+    options = { headers: default_headers, body: { consumer_key: @consumer_key, code: request_token }.to_json }
     response = HTTParty.post("#{BASE_API_URI}/oauth/authorize", options)
-    @logger.debug(
-      "Access token response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
-    )
+    @logger.debug("Response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}")
     if response.code == 200
       @access_token = response.parsed_response['access_token']
-      true
-    else
-      @logger.error("Error creating access token: #{response.message}")
-      false
+      return true
     end
+    @logger.error("Error creating access token: #{response.message}")
+    false
   end
 
   def update_article_list(access_token)
@@ -75,9 +64,7 @@ class PocketAPI
       body: { consumer_key: @consumer_key, access_token: access_token, detailType: 'complete', state: 'all' }.to_json
     }
     response = HTTParty.post("#{BASE_API_URI}/get", options)
-    @logger.debug(
-      "Article list response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}"
-    )
+    @logger.debug("Response:\n\tcode: #{response.code}\n\tmessage: #{response.message}\n\tbody: #{response.body}")
     @article_list = response.parsed_response['list'].map { |_id, article| article }
   end
 
