@@ -92,6 +92,12 @@ class PocketServer < Sinatra::Base
     redirect '/'
   end
 
+  post '/manual_auth' do
+    # set the access token from the form
+    session[:access_token] = params[:access_token]
+    redirect '/'
+  end
+
   get '/article_list' do
     # Serve the article list from the session if it exists
     unless settings.pocket_api.article_list.nil?

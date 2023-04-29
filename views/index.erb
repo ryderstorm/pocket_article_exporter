@@ -44,11 +44,22 @@
                   </li>
                 <% end %>
               <% else %>
-                <form method="post" action="/authorize">
-                  <button class="button" type="submit">Authorize with Pocket</button>
-                </form>
+                <li class="auth-buttons">
+                  <form method="post" action="/authorize">
+                    <button class="button" type="submit">Authorize with Pocket</button>
+                  </form>
+                </li>
+                <li class="auth-buttons">
+                  <button class="button" id="manual-auth-btn">Manually Enter Access Token</button>
+                </li>
               <% end %>
           </ul>
+          <div id="manual-auth-form">
+            <form method="post" action="/manual_auth">
+              <input type="text" name="access_token" placeholder="Enter access token...">
+              <button class="button" type="submit">Submit</button>
+            </form>
+          </div>
         </div>
         <div id="modal">
           <p></p>
@@ -64,7 +75,7 @@
             <ul class="menu-list">
               <li><a class="button download-button" href="/download_article_list?format=yaml"><span>Download as YAML</span></a></li>
               <li><a class="button download-button" href="/download_article_list?format=json"><span>Download as JSON</span></a></li>
-              <li><a class="button download-button" href="/download_article_list?format=csv"><span>Download as Raindrop.io CSV</span></a></li>
+              <li><a class="button download-button" href="/download_article_list?format=csv"><span>Download as CSV for Raindrop.io</span></a></li>
             </ul>
           </div>
           <ol id="article-list">
@@ -91,32 +102,6 @@
     </div>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <script>
-      const copyTokenBtn = document.querySelector('#copy-token-btn');
-      if (copyTokenBtn) {
-        tippy(copyTokenBtn, { content: 'Copy access token to clipboard' });
-        copyTokenBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText('<%= access_token %>')
-            .then(() => {
-              const copiedTooltip = tippy(copyTokenBtn, { content: 'Copied!' });
-              copiedTooltip.show();
-              setTimeout(() => {
-                copiedTooltip.hide();
-                setTimeout(() => {
-                  copiedTooltip.destroy();
-                }, 500);
-              }, 1500);
-            })
-        });
-      }
-      const fetchArticlesBtn = document.querySelector('#fetch-articles-btn');
-      if (fetchArticlesBtn) {
-        fetchArticlesBtn.addEventListener('click', () => {
-          const modal = document.querySelector('#modal');
-          modal.querySelector('p').textContent = 'Fetching the articles from the Pocket API could take a few minutes. Please wait...';
-          modal.style.display = 'flex';
-        });
-      }
-    </script>
+    <script src="/script.js"></script>
   </body>
 </html>

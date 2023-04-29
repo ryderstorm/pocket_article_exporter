@@ -197,3 +197,17 @@ a:hover {
 .sk-flow-dot {
   background-color: var(--foreground) !important;
 }
+
+#manual-auth-form {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+#manual-auth-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#manual-auth-form button {
+  margin-top: 10px;
+}
