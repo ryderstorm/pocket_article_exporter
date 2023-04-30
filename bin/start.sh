@@ -15,7 +15,9 @@ echo "Consumer key: $POCKET_CONSUMER_KEY"
 echo "Redirect URI: $POCKET_REDIRECT_URI"
 echo -e "\n-----------------------\n"
 
-# kill any existing server instances
+# Kill any existing server instances
+# This is useful when developing the app and running the app
+# in the background via something like rerun
 process_id=$(cat pocket_auth_app_pid.txt) || true
 if [ -z "$process_id" ]; then
   echo "No process id found in pocket_auth_app_pid.txt"
