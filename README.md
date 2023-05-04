@@ -10,14 +10,14 @@
 
 TBD
 
-## Prerequisites
+## Pre-requisites
 
-You must have the following environment variables set:
+The app uses the following environment variables:
 
-| Variable Name         | Description                                                                                                                                                                                                 |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POCKET_CONSUMER_KEY` | Your Pocket API consumer key. Instructions on setting one up can be found [here](https://getpocket.com/developer/docs/authentication).                                                                      |
-| `POCKET_REDIRECT_URI` | The redirect URI you set up for your Pocket API consumer key. This must be a valid URI. It doesn't have to be a real URI, but it must be a valid URI. I used `http://localhost:8999` for local development. |
+| Variable Name         | Description                                                                                                                                                                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POCKET_CONSUMER_KEY` | _Required_. Your Pocket API consumer key. Instructions on setting one up can be found [here](https://getpocket.com/developer/docs/authentication).                                                                                                            |
+| `POCKET_REDIRECT_URI` | _Optional_. The URL that the Pocket API should redirect to during the authorization flow. If you can host the app with a publicly available URL (maybe through ngrok), set this to that URL. If not, you can leave this blank and manually authorize the app. |
 
 ## Running the app locally
 
@@ -27,11 +27,24 @@ You must have the following environment variables set:
  docker run --rm --name pocket_article_exporter -e POCKET_CONSUMER_KEY -e POCKET_REDIRECT_URI -p 8999:8999 ghcr.io/ryderstorm/pocket_article_exporter:main
 ```
 
-Then visit http://localhost:8999 or whatever you set your `POCKET_REDIRECT_URI` to.
+### Locally via Ruby
 
----
+```bash
+bundle install
+./bin/start.sh
+```
+
+Once you have the app up and running, visit http://localhost:8999 and you should see the main page of the app:
+
+![Start page](./public/app_sceenshot_start_page.png)
+
+To see more logging for debugging, run the app with the `LOG_LEVEL` environment variable set to `DEBUG`.
 
 ## References
 
 - https://getpocket.com/developer/docs/getstarted/web
 - https://getpocket.com/developer/docs/authentication
+
+```
+
+```
